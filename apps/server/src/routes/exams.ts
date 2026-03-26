@@ -39,12 +39,13 @@ function buildGradeResponse(
   }>
 ) {
   const answerMap = new Map<string, number>();
+  const answerCountMap = new Map<string, number>();
 
   for (const rawAnswer of rawAnswers) {
-    answerMap.set(
-      `${rawAnswer.answerType}:${rawAnswer.number}`,
-      rawAnswer.answer
-    );
+    const answerKey = `${rawAnswer.answerType}:${rawAnswer.number}`;
+
+    answerMap.set(answerKey, rawAnswer.answer);
+    answerCountMap.set(answerKey, (answerCountMap.get(answerKey) ?? 0) + 1);
   }
 
   let score = 0;
@@ -53,9 +54,9 @@ function buildGradeResponse(
   let unansweredCount = 0;
 
   const results = exam.questions.map((question) => {
-    const submittedAnswer = answerMap.get(
-      `${question.answerType}:${question.number}`
-    );
+    const answerKey = `${question.answerType}:${question.number}`;
+    const submittedAnswer = answerMap.get(answerKey);
+    const submittedAnswerCount = answerCountMap.get(answerKey) ?? 0;
 
     if (submittedAnswer == null) {
       unansweredCount += 1;
@@ -63,6 +64,15 @@ function buildGradeResponse(
         answerType: question.answerType,
         number: question.number,
         result: GRADE_RESULT.UNANSWERED
+      };
+    }
+
+    if (submittedAnswerCount > 1) {
+      wrongCount += 1;
+      return {
+        answerType: question.answerType,
+        number: question.number,
+        result: GRADE_RESULT.DUPLICATED
       };
     }
 

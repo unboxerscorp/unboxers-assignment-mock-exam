@@ -96,6 +96,7 @@ pnpm dev
 - `studentNumber`: 번호
 - `seatNumber`: 좌석 번호
 - `answers`: 빈 배열도 허용하며, 아무 답안도 제출하지 않으면 전체 문항이 `unanswered`로 채점됨
+- `answers`: 같은 `answerType`과 `number` 조합으로 2개 이상 제출하면 해당 문항은 오답 처리되며 결과 상태가 `duplicated`로 반환됨
 - `answers[].answerType`: `objective` 또는 `subjective`
 - `answers[].number`: 문항 번호
 - `answers[].answer`: 제출 답안
@@ -135,7 +136,53 @@ pnpm dev
 - `unansweredCount`: 미응답 개수
 - `results[].answerType`: `objective` 또는 `subjective`
 - `results[].number`: 문항 번호
-- `results[].result`: `correct`, `wrong`, `unanswered`
+- `results[].result`: `correct`, `wrong`, `unanswered`, `duplicated`
+
+#### Duplicate Answer Example
+
+같은 문항에 대해 두 개 이상 답을 보내면 해당 문항은 `duplicated` 상태로 반환되며 오답으로 집계됩니다.
+
+```json
+{
+  "name": "홍길동",
+  "school": "베이스고",
+  "grade": 1,
+  "studentNumber": 12,
+  "seatNumber": 3,
+  "answers": [
+    {
+      "answerType": "objective",
+      "number": 1,
+      "answer": 3
+    },
+    {
+      "answerType": "objective",
+      "number": 1,
+      "answer": 4
+    }
+  ]
+}
+```
+
+```json
+{
+  "message": "Exam submitted successfully",
+  "data": {
+    "title": "모의고사 응시 테스트",
+    "score": 0,
+    "correctCount": 0,
+    "wrongCount": 1,
+    "unansweredCount": 24,
+    "results": [
+      {
+        "answerType": "objective",
+        "number": 1,
+        "result": "duplicated"
+      }
+    ]
+  }
+}
+```
 
 ## Seed 정답표
 

@@ -18,7 +18,7 @@ export const openApiDocument = {
       },
       GradeResult: {
         type: "string",
-        enum: ["correct", "wrong", "unanswered"]
+        enum: ["correct", "wrong", "unanswered", "duplicated"]
       },
       ExamData: {
         type: "object",
